@@ -23,6 +23,7 @@ class Processor:
         return self.active
 
     def complete(self):
+        print('processor:'+str(self.id) +' completed')
         self.current.complete()
         for c in self.current.children:
             c.update_state()
@@ -40,8 +41,10 @@ class Processor:
             p = random.choice(processors)
             if p.deque:
                 self.current = p.deque.pop()
+                print('processor '+str(self.id)+' stole: '+str(self.current.id))
                 self.active = True
                 return True
+        print('processor ' + str(self.id) + ' failed steal')
         return False
 
     def startup(self, n):
