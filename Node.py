@@ -48,7 +48,6 @@ class Node:
         for c in self.children:
             c.recur()
 
-
     def graph(self):
         g = nx.DiGraph()
         g.add_node(self)
