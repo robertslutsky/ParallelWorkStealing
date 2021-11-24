@@ -1,26 +1,45 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+
+
 class Node:
     counter = 0
-    def __init__(self, parents=None, children=None):
-        self.value = Node.counter
+
+    # state: 0: not ready, 1: ready, 2:completed
+    def __init__(self, parents=None, children=None, state=0):
+        self.id = Node.counter
         Node.counter += 1
-        self.parents =[]
+        self.parents = []
         if parents:
             self.parents = parents
-        self.children =[]
+        self.children = []
         if children:
             self.children = children
+        self.state = state
+
+    def update_state(self):
+        if self.state == 0:
+            for c in self.parents:
+                if c.state != 2:
+                    return
+            self.state = 1
+
+    def is_ready(self):
+        return self.state == 1
+
+    def complete(self):
+        print(self)
+        self.state = 2
 
     def __str__(self):
-        parentString ='parents: '
+        parentString = 'parents: '
         for p in self.parents:
-            parentString += str(p.value) + ' '
-        childrenString='children: '
+            parentString += str(p.id) + ' '
+        childrenString = 'children: '
         for c in self.children:
-            childrenString += str(c.value) + ' '
-        # return str(self.value) + ' ' + parentString + childrenString
-        return str(self.value)
+            childrenString += str(c.id) + ' '
+        # return str(self.id) + ' ' + parentString + childrenString
+        return str(self.id)
 
     def spawn(self):
         spawn = Node([self])
@@ -32,14 +51,12 @@ class Node:
         c1.children = [sync]
         c2.children = [sync]
         spawn.children = [c1, c2]
-        return c1,c2
+        return c1, c2
 
     def continuation(self):
         c = Node([self], self.children)
         self.children[0].parents.remove(self)
-        print(self.children[0].parents)
         self.children[0].parents.append(c)
-        print(self.children[0].parents)
         self.children = [c]
         return c
 
@@ -55,10 +72,10 @@ class Node:
         nx.draw_planar(g, with_labels=True)
         plt.show()
 
-    def graph_help(self,g):
+    def graph_help(self, g):
         for n in self.children:
             g.add_node(n)
-            g.add_edge(self,n)
+            g.add_edge(self, n)
             n.graph_help(g)
 
     def graph_p(self):
@@ -68,20 +85,8 @@ class Node:
         nx.draw(g, with_labels=True)
         plt.show()
 
-    def graph_help_p(self,g):
+    def graph_help_p(self, g):
         for n in self.parents:
             g.add_node(n)
-            g.add_edge(n,self)
+            g.add_edge(n, self)
             n.graph_help_p(g)
-
-
-start = Node()
-end = Node([start])
-start.children = [end]
-x,y=start.spawn()
-x.continuation()
-y.continuation().continuation().continuation()
-start.recur()
-start.graph()
-# end.graph_p()
-
