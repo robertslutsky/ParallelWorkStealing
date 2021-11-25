@@ -1,3 +1,6 @@
+from Node import Node
+from System import System
+import random
 # This is a sample Python script.
 
 # Press ⌃R to execute it or replace it with your code.
@@ -11,6 +14,20 @@ def print_hi(name):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    start = Node()
+    end = Node([start])
+    start.children = [end]
+
+    # x,y=start.spawn()
+    # start.be_a_spawn()
+    x, y = start.be_a_spawn()
+    x.continuation()
+    # x.continuation().continuation().continuation()
+    # y.continuation().continuation().continuation().continuation().spawn()
+    # end.graph_p()
+    s = System(start,3, method='random')
+    random.seed(0)
+    s.run()
+    start.graph()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
