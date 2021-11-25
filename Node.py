@@ -53,6 +53,17 @@ class Node:
         spawn.children = [c1, c2]
         return c1, c2
 
+    #node both spawn/sync would cause problems
+    def be_a_spawn(self):
+        c1 = Node([self])
+        c2 = Node([self])
+        sync = Node([c1, c2], [self.children[0]])
+        self.children[0].parents = [sync]
+        self.children = [c1,c2]
+        c1.children = [sync]
+        c2.children = [sync]
+        return c1, c2
+
     def continuation(self):
         c = Node([self], self.children)
         self.children[0].parents.remove(self)
