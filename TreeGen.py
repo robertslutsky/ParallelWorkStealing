@@ -2,6 +2,7 @@ import random
 import networkx as nx
 import matplotlib.pyplot as plt
 
+
 class TreeNode:
     # maybe reset?
     counter = 0
@@ -24,11 +25,10 @@ class TreeNode:
 
     def graph_help(self, g):
         for n in self.children:
-            if n.id>10:
-                return
             g.add_node(n)
             g.add_edge(self, n)
             n.graph_help(g)
+
 
 class BinomialTree:
     def __init__(self, m, q):
@@ -45,5 +45,5 @@ class BinomialTree:
     def graph(self):
         self.root.graph()
 
-bt = BinomialTree(10,.01)
+bt = BinomialTree(5,.18)
 bt.graph()

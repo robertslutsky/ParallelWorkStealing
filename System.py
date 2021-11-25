@@ -9,10 +9,20 @@ class System:
         self.method = method
         self.processors = [Processor(i, method) for i in range(num_processors)]
         self.processors[0].startup(start)
-    x=0
+        self.step_number = 0
+        Processor.counter = 0
+        Node.counter = 0
+
+    def run(self):
+        x = [p for p in self.processors if p.is_active()]
+        while x:
+            self.step()
+            x = [p for p in self.processors if p.is_active()]
+        print("done")
+
     def step(self):
-        print('step:'+str(System.x))
-        System.x+=1
+        print('step:'+str(self.step_number))
+        self.step_number += 1
         to_steal = [p for p in self.processors if not p.is_active()]
         to_complete = [p for p in self.processors if p.is_active()]
         # random so order/winner isn't always set
@@ -27,23 +37,17 @@ class System:
 start = Node()
 end = Node([start])
 start.children = [end]
+
+# x,y=start.spawn()
+# start.be_a_spawn()
 x, y = start.be_a_spawn()
+# x.continuation()
 # x.continuation().continuation().continuation()
 # y.continuation().continuation().continuation().continuation().spawn()
 start.graph()
-end.graph_p()
+# end.graph_p()
 s = System(start,2)
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
+s.run()
 # s.step()
 # s.step()
 # s.step()

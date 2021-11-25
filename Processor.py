@@ -38,6 +38,7 @@ class Processor:
     def steal(self, processors):
         # needs to be implemented for each option
         if self.method == 'random':
+            #need to mod so won't choose itself?
             p = random.choice(processors)
             if p.deque:
                 self.current = p.deque.pop()
