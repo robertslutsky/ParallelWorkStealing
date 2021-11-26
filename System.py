@@ -34,30 +34,4 @@ class System:
             p.complete()
 
 
-start = Node()
-end = Node([start])
-start.children = [end]
-
-# x,y=start.spawn()
-# start.be_a_spawn()
-x, y = start.be_a_spawn()
-# x.continuation()
-# x.continuation().continuation().continuation()
-# y.continuation().continuation().continuation().continuation().spawn()
-start.graph()
-# end.graph_p()
-s = System(start,2)
-s.run()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
-# s.step()
+# moved this stuff to main
