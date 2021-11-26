@@ -47,6 +47,20 @@ class BinomialTree:
         self.root.graph()
 
 
+def tree_count(root):
+    # return signature: depth, count
+    if len(root.children)==0:
+        # base case, at a leaf node
+        depth = 0
+        count = 1
+        return depth, count
+    else:
+        depths_counts = [tree_count(child) for child in root.children] # list of tuples (depth, num_nodes) for each of the subtree
+        depths = [depth_count_pair[0] for depth_count_pair in depths_counts]
+        counts = [depth_count_pair[1] for depth_count_pair in depths_counts]
+        return max(depths)+1, sum(counts)+1
+
+
 def generate_dag(tree_root):
     start = Node() # dag root
     end = Node([start])
@@ -97,6 +111,8 @@ def pfor_helper(node, min, max):
 random.seed(55)
 bt = BinomialTree(3,.18)
 bt.graph()
+
+print("depth, count", tree_count(bt.root))
 
 dag = generate_dag(bt.root)
 dag.graph()
