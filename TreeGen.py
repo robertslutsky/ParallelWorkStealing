@@ -54,26 +54,6 @@ class BinomialTree(SearchTree):
                 root.children.append(t)
                 self.gen_tree(t, m, q)
 
-    def graph(self):
-        self.root.graph()
-
-
-def pfor_helper(node, min, max):
-    # node: node in dag in the pfor tree
-    # min: smallest iteration in for loop this node is responsible for
-    # min: smallest iteration in for loop this node is responsible for
-    # return: leaf nodes of the subdag from node
-    if min >= max:
-        # base case
-        return [node]
-    else:
-        mid = int((min + max) / 2)
-        left_child, right_child = node.be_a_spawn()
-        left_leaves = pfor_helper(left_child, min, mid)
-        right_leaves = pfor_helper(right_child, mid + 1, max)
-        return left_leaves + right_leaves
-
-
 class GeometricTree(SearchTree):
     # b is mean so inverse of normal geometric parameter
     def __init__(self, b, d=10):
@@ -117,6 +97,34 @@ def pfor(tree_node, dag_node):
     for i in range(num_iterations):
         pfor(tree_node.children[i], leaves[i])
 
+def pfor_helper(node, min, max):
+    # node: node in dag in the pfor tree
+    # min: smallest iteration in for loop this node is responsible for
+    # min: smallest iteration in for loop this node is responsible for
+    # return: leaf nodes of the subdag from node
+    if min >= max:
+        # base case
+        return [node]
+    else:
+        mid = int((min + max) / 2)
+        left_child, right_child = node.be_a_spawn()
+        left_leaves = pfor_helper(left_child, min, mid)
+        right_leaves = pfor_helper(right_child, mid + 1, max)
+        return left_leaves + right_leaves
+      
+def tree_count(root):
+    # return signature: depth, count
+    if len(root.children)==0:
+        # base case, at a leaf node
+        depth = 0
+        count = 1
+        return depth, count
+    else:
+        depths_counts = [tree_count(child) for child in root.children] # list of tuples (depth, num_nodes) for each of the subtree
+        depths = [depth_count_pair[0] for depth_count_pair in depths_counts]
+        counts = [depth_count_pair[1] for depth_count_pair in depths_counts]
+        return max(depths)+1, sum(counts)+1
+
 
 # i=20
 # while True:
@@ -130,8 +138,25 @@ random.seed(55)
 bt = BinomialTree(3, .18)
 bt.graph()
 
+print("depth, count", tree_count(bt.root))
+
 dag = generate_dag(bt.root)
 dag.graph()
+
+
+num_good_trees = 0
+counts = []
+num_trees = 0
+while num_good_trees < 10:
+    bt = BinomialTree(3,.18)
+    depth, count = tree_count(bt.root)
+    if depth>10:
+        counts.append(count)
+        num_good_trees += 1
+        num_trees += 1
+print(counts)
+print(num_trees)
+
 
 gt = GeometricTree(2, 3)
 gt.graph()
