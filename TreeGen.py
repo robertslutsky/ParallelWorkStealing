@@ -116,3 +116,16 @@ print("depth, count", tree_count(bt.root))
 
 dag = generate_dag(bt.root)
 dag.graph()
+
+num_good_trees = 0
+counts = []
+num_trees = 0
+while num_good_trees < 10:
+    bt = BinomialTree(3,.18)
+    depth, count = tree_count(bt.root)
+    if depth>10:
+        counts.append(count)
+        num_good_trees += 1
+        num_trees += 1
+print(counts)
+print(num_trees)
