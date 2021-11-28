@@ -4,10 +4,11 @@ from Processor import Processor
 
 
 class System:
-    def __init__(self, start, num_processors=1, method='random'):
+    def __init__(self, start, num_processors=1, method='random', num_clusters=1):
         self.num_processors = num_processors
         self.method = method
-        self.processors = [Processor(i, method) for i in range(num_processors)]
+        self.num_clusters = num_clusters
+        self.processors = [Processor(i, method, cluster=i % num_clusters) for i in range(num_processors)]
         self.processors[0].startup(start)
         self.step_number = 0
         Processor.counter = 0
@@ -35,3 +36,17 @@ class System:
 
 
 # moved this stuff to main
+start = Node()
+end = Node([start])
+start.children = [end]
+
+# x,y=start.spawn()
+# start.be_a_spawn()
+x, y = start.be_a_spawn()
+x, y = x.be_a_spawn()
+x, y = x.be_a_spawn()
+# end.graph_p()
+s = System(start,2, method='random',num_clusters=1)
+random.seed(6)
+s.run()
+start.graph()
