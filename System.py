@@ -22,7 +22,7 @@ class System:
         print("done")
 
     def step(self):
-        print('step:'+str(self.step_number))
+        print('\nstep:'+str(self.step_number))
         self.step_number += 1
         to_steal = [p for p in self.processors if not p.is_active()]
         to_complete = [p for p in self.processors if p.is_active()]
@@ -33,6 +33,10 @@ class System:
             p.steal(self.processors)
         for p in to_complete:
             p.complete()
+        for p in to_steal:
+            print(f"p{str(p.id)}'s current: {p.current}{' (incoming)' if p.delay>0 else ''}, deque:", [str(item) for item in p.deque])
+        for p in to_complete:
+            print(f"p{str(p.id)}'s current: {p.current}{' (incoming)' if p.delay>0 else ''}, deque:", [str(item) for item in p.deque])
 
 
 # moved this stuff to main
@@ -46,7 +50,7 @@ x, y = start.be_a_spawn()
 x, y = x.be_a_spawn()
 x, y = x.be_a_spawn()
 # end.graph_p()
-s = System(start,2, method='random',num_clusters=1)
+s = System(start,2, method='random',num_clusters=2)
 random.seed(6)
 s.run()
 start.graph()

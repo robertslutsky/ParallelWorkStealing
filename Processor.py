@@ -90,18 +90,23 @@ class Processor:
             else:
                 self.delay = 2
             # actually stealing from processor
+            print(f"proc {str(self.id)} sent steal attempt to {str(p.id)}, w/ delay {self.delay}", end=", ")
 
             if p.deque:
                 self.current = p.deque.pop()
+
         self.delay -= 1
+
         if self.delay == 0:
-            print('processor ' + str(self.id) + ' delay has ended')
+            print('processor ' + str(self.id) + ' delay has ended', end=", ")
             if self.current is not None:
                 self.active = True
-                print('processor '+str(self.id)+' stole: '+str(self.current.id))
+                print('processor '+str(self.id)+' got response and stole: '+str(self.current.id))
+                return True
             else:
-                print('processor ' + str(self.id) + ' failed steal')
-        return False
+                print('processor ' + str(self.id) + ' got response and failed steal')
+                return False
+        print()
 
     def startup(self, n):
         self.active = True
