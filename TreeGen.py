@@ -77,8 +77,8 @@ def generate_dag(tree_root):
     start = Node()  # dag root
     end = Node([start])
     start.children = [end]
-
-    pfor(tree_root, start)
+    c = start.continuation()
+    pfor(tree_root, c)
 
     return start
 
@@ -91,12 +91,14 @@ def pfor(tree_node, dag_node):
     num_iterations = len(tree_node.children)
     leaves = pfor_helper(dag_node, 0,
                          num_iterations - 1)  # nodes in execution dag that are responsible for execution (leaves of the parallel_for "triangle" dag)
-
     if len(leaves) != num_iterations:
         assert ValueError("should be same number of leaves as there are iterations")
 
     for i in range(num_iterations):
-        pfor(tree_node.children[i], leaves[i])
+        if tree_node.children[i].children:
+            pfor(tree_node.children[i], leaves[i].continuation())
+        else:
+            pfor(tree_node.children[i], leaves[i])
 
 def pfor_helper(node, min, max):
     # node: node in dag in the pfor tree
