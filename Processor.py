@@ -11,7 +11,7 @@ class Processor:
         self.active = False
         self.cluster = cluster
         self.delay = 0
-
+        self.victim = None
         if method == "revenge":
             self.last_stole_from_id = id-1 # initialize to processor to the left. Can be -1, will be taken care of when choosing the processor
 
@@ -62,19 +62,19 @@ class Processor:
         if self.delay == 0:
             if self.method == 'random':
                 #need to mod so won't choose itself?
-                p = random.choice(processors)
+                self.victim = random.choice(processors)
 
             elif self.method == 'right':
                 num_processors = len(processors)
                 steal_index = (self.id + 1) % num_processors
-                p = processors[steal_index]
+                self.victim = processors[steal_index]
 
             elif self.method == 'revenge':
                 # steal from processor that stole from you last (can try different ways of initializing who to take from first if never been stolen from)
                 num_processors = len(processors)
                 steal_index = (self.last_stole_from_id) % num_processors # handles if id is -1
-                p = processors[steal_index]
-                p.last_stole_from_id = self.id # tell processor you are stealing from to steal from you
+                self.victim = processors[steal_index]
+                self.victim.last_stole_from_id = self.id # tell processor you are stealing from to steal from you
 
             elif self.method == 'last_pusher':
                 # steal from the processor that pushed to its deque latest
@@ -85,15 +85,15 @@ class Processor:
                 assert NotImplemented("oof")
 
             #delay for which processor stole from
-            if p.cluster == self.cluster:
+            if self.victim.cluster == self.cluster:
                 self.delay = 1
             else:
                 self.delay = 2
             # actually stealing from processor
-            print(f"proc {str(self.id)} sent steal attempt to {str(p.id)}, w/ delay {self.delay}", end=", ")
+            print(f"proc {str(self.id)} sent steal attempt to {str(self.victim.id)}, w/ delay {self.delay}", end=", ")
 
-            if p.deque:
-                self.current = p.deque.pop()
+        if self.delay == 1 and self.victim.deque:
+            self.current = self.victim.deque.pop()
 
         self.delay -= 1
 

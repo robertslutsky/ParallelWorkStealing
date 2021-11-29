@@ -49,7 +49,6 @@ class Node:
         c1 = Node([self])
         c2 = Node([self])
         sync = Node([c1, c2], [self.children[0]])
-        self.children[0].parents.remove(self)
         self.children[0].parents.append(sync)
         self.children = [c1,c2]
         c1.children = [sync]
