@@ -73,6 +73,7 @@ class GeometricTree(SearchTree):
 
 
 def generate_dag(tree_root):
+    Node.counter = 0
     start = Node()  # dag root
     end = Node([start])
     start.children = [end]
@@ -149,6 +150,8 @@ counts = []
 num_trees = 0
 while num_good_trees < 10:
     bt = BinomialTree(3,.18)
+    dag = generate_dag(bt.root)
+    dag.graph()
     depth, count = tree_count(bt.root)
     if depth>10:
         counts.append(count)
