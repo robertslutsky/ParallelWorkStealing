@@ -34,7 +34,7 @@ class TreeNode:
 
 class SearchTree:
     def __init__(self):
-        print('hi')
+        pass
 
     def graph(self):
         self.root.graph()
