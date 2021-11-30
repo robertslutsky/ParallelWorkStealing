@@ -4,10 +4,11 @@ from Processor import Processor
 
 
 class System:
-    def __init__(self, num_processors=1, method='random'):
+    def __init__(self, num_processors=1, method='random', num_clusters=1):
         self.num_processors = num_processors
         self.method = method
-        self.processors = [Processor(i, method) for i in range(num_processors)]
+        self.num_clusters = num_clusters
+        self.processors = [Processor(i, method, cluster=i % num_clusters) for i in range(num_processors)]
         self.step_number = 0
         self.steal_attempts = 0
         self.successful_steals = 0
@@ -31,7 +32,7 @@ class System:
         self.successful_steals = 0
 
     def step(self):
-        print('step:'+str(self.step_number))
+        print('\nstep:'+str(self.step_number))
         self.step_number += 1
         to_steal = [p for p in self.processors if not p.is_active()]
         to_complete = [p for p in self.processors if p.is_active()]
@@ -44,9 +45,27 @@ class System:
             if success: self.successful_steals += 1
         for p in to_complete:
             p.complete()
+        for p in to_steal:
+            print(f"p{str(p.id)}'s current: {p.current}{' (incoming)' if p.delay>0 else ''}, deque:", [str(item) for item in p.deque])
+        for p in to_complete:
+            print(f"p{str(p.id)}'s current: {p.current}{' (incoming)' if p.delay>0 else ''}, deque:", [str(item) for item in p.deque])
+
 
     def __str__(self):
         return(f"#p={self.num_processors}, method={self.method}")
 
-
 # moved this stuff to main
+start = Node()
+end = Node([start])
+start.children = [end]
+
+# x,y=start.spawn()
+# start.be_a_spawn()
+x, y = start.be_a_spawn()
+x, y = x.be_a_spawn()
+x, y = x.be_a_spawn()
+# end.graph_p()
+s = System(start,2, method='random',num_clusters=2)
+random.seed(6)
+s.run()
+start.graph()
