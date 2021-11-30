@@ -34,11 +34,10 @@ class TreeNode:
 
 class SearchTree:
     def __init__(self):
-        print('hi')
+        pass
 
     def graph(self):
         self.root.graph()
-
 
 class BinomialTree(SearchTree):
     def __init__(self, m, q):
@@ -70,6 +69,30 @@ class GeometricTree(SearchTree):
             t = TreeNode()
             root.children.append(t)
             self.gen_tree(t, b, d - 1)
+
+class BinomialTreeGenerator:
+    def __init__(self, m, q):
+        self.m = m
+        self.q = q
+
+    def generate_tree(self):
+        bt = BinomialTree(self.m, self.q)
+        return bt
+
+    def __str__(self):
+        return(f"Binomial Tree, m={self.m}, q={self.q}")
+
+class GeometricTreeGenerator:
+    def __init__(self, b, d):
+        self.b = b
+        self.d = d
+
+    def generate_tree(self):
+        gt = GeometricTree(self.b, self.d)
+        return gt
+
+    def __str__(self):
+        return(f"Geometric Tree, b={self.b}, d={self.d}")
 
 
 def generate_dag(tree_root):
