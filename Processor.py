@@ -45,15 +45,22 @@ class Processor:
             self.current = ready_children[0]
             if len(ready_children) == 2:
                 self.deque.appendleft(ready_children[1])
+
+            if len(ready_children)==1:
+                print("enabled1: ", self.current.id)
+            if len(ready_children)==2:
+                print("enable2: ", ready_children[0].id, ready_children[1].id)
         else:
             # doesn't enable any
             if len(self.deque)==0:
                 # nothing on deque to take from
+                print("enable0: none on deque")
                 self.active = False
                 self.current = None
             else:
                 # can pop from bottom of deque
                 self.current = self.deque.popleft()
+                print("enable0: pop from deque:", self.current.id)
             
 
     def steal(self, processors):

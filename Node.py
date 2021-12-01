@@ -28,7 +28,7 @@ class Node:
         return self.state == 1
 
     def complete(self):
-        print(self)
+        print(self, end="; ")
         self.state = 2
 
     def __str__(self):

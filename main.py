@@ -25,9 +25,9 @@ if __name__ == '__main__':
     # x.continuation().continuation().continuation()
     # y.continuation().continuation().continuation().continuation().spawn()
     # end.graph_p()
-    s = System(start,3, method='random')
+    s = System(3, method='random')
     random.seed(0)
-    s.run()
+    s.run(start)
     start.graph()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

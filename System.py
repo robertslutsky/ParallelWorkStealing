@@ -46,9 +46,9 @@ class System:
         for p in to_complete:
             p.complete()
         for p in to_steal:
-            print(f"p{str(p.id)}'s current: {p.current}{' (incoming)' if p.delay>0 else ''}, deque:", [str(item) for item in p.deque])
+            print(f"p{str(p.id)}'s current: {p.current}, deque:", [str(item) for item in p.deque])
         for p in to_complete:
-            print(f"p{str(p.id)}'s current: {p.current}{' (incoming)' if p.delay>0 else ''}, deque:", [str(item) for item in p.deque])
+            print(f"p{str(p.id)}'s current: {p.current}, deque:", [str(item) for item in p.deque])
 
 
     def __str__(self):
@@ -62,10 +62,10 @@ start.children = [end]
 # x,y=start.spawn()
 # start.be_a_spawn()
 x, y = start.be_a_spawn()
-x, y = x.be_a_spawn()
+# x, y = x.be_a_spawn()
 x, y = x.be_a_spawn()
 # end.graph_p()
-s = System(start,2, method='random',num_clusters=2)
+s = System(2, method='random',num_clusters=2)
 random.seed(6)
-s.run()
+s.run(start)
 start.graph()
