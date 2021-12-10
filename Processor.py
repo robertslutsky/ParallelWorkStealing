@@ -3,7 +3,7 @@ import random
 
 
 class Processor:
-    def __init__(self, id, method='random', current=None, cluster = 0):
+    def __init__(self, id, method='random', current=None, cluster=0):
         self.deque = deque()
         self.current = None
         self.method = method
@@ -12,6 +12,7 @@ class Processor:
         self.cluster = cluster
         self.delay = 0
         self.victim = None
+        # the two things belong are the same?
         if method == "revenge":
             self.last_stole_from_id = id-1 # initialize to processor to the left. Can be -1, will be taken care of when choosing the processor
 
@@ -67,10 +68,24 @@ class Processor:
         # choosing processor to steal from
         # needs to be implemented for each option
         if self.delay == 0:
+            #this is ovarall random
             if self.method == 'random':
-                #need to mod so won't choose itself?
                 self.victim = random.choice(processors)
-
+                while self.victim == self and len(processors) != 1:
+                    self.victim = random.choice(processors)
+            # random within cluster w prob .95, prob .05 attempt to steal from other cluster
+            elif self.method == 'random_within_cluster_small_crossover':
+                r = random.random()
+                if r < .05:
+                    pos = random.randint(0,len(processors)/2-1)
+                    self.victim = processors[2*pos + 1-self.cluster]
+                else:
+                    pos = random.randint(0, len(processors) / 2-1)
+                    act_pos = 2*pos + self.cluster
+                    while processors[act_pos] == self and len(processors)!=2:
+                        pos = random.randint(0, len(processors) / 2-1)
+                        act_pos = 2 * pos + self.cluster
+                    self.victim = processors[act_pos]
             elif self.method == 'right':
                 num_processors = len(processors)
                 steal_index = (self.id + 1) % num_processors
@@ -84,10 +99,12 @@ class Processor:
                 self.victim.last_stole_from_id = self.id # tell processor you are stealing from to steal from you
 
             elif self.method == 'last_pusher':
+                # so many will push at the same time in ours idk about this one
                 # steal from the processor that pushed to its deque latest
                 assert NotImplemented("oof")
 
             elif self.method == 'last_mover':
+                #i confused
                 # steal from the processor that pushed to its deque or stole from another deque latest (idk how this could be better, but whatever)
                 assert NotImplemented("oof")
 
@@ -114,6 +131,10 @@ class Processor:
                 print('processor ' + str(self.id) + ' got response and failed steal')
                 return False
         print()
+
+    def __eq__(self,obj):
+        return self.id == obj.id
+
 
     def startup(self, n):
         self.active = True

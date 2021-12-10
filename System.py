@@ -8,6 +8,8 @@ class System:
         self.num_processors = num_processors
         self.method = method
         self.num_clusters = num_clusters
+        assert num_clusters==1 or (num_clusters==2 and num_processors%2==0), "1 cluster or (2 clusters w even total procesors"
+        assert num_clusters != 1 or method !='random_within_cluster_small_crossover', "need 2 clusters for crossover"
         self.processors = [Processor(i, method, cluster=i % num_clusters) for i in range(num_processors)]
         self.step_number = 0
         self.steal_attempts = 0
@@ -58,14 +60,13 @@ class System:
 start = Node()
 end = Node([start])
 start.children = [end]
-
 # x,y=start.spawn()
 # start.be_a_spawn()
 x, y = start.be_a_spawn()
 # x, y = x.be_a_spawn()
 x, y = x.be_a_spawn()
 # end.graph_p()
-s = System(2, method='random',num_clusters=2)
+s = System(2, method='random_within_cluster_small_crossover',num_clusters=2)
 random.seed(6)
 s.run(start)
 start.graph()
