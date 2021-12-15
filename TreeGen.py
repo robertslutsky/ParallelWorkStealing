@@ -87,8 +87,8 @@ class GeometricTreeGenerator:
         self.b = b
         self.d = d
 
-    def generate_tree(self):
-        gt = GeometricTree(self.b, self.d)
+    def generate_tree(self, name="treeName"):
+        gt = GeometricTree(self.b, self.d, name)
         return gt
 
     def __str__(self):
@@ -102,6 +102,7 @@ def generate_dag(tree_root):
     start.children = [end]
     c = start.continuation()
     pfor(tree_root, c)
+    start.count = Node.counter
 
     return start
 
@@ -161,10 +162,13 @@ def tree_count(root):
 #     i+=1
 
 # random.seed(55)
-# bt = BinomialTree(3, .18)
+# bt = BinomialTree(2, .1)
 # bt.graph()
+# a = generate_dag(bt.root)
+# a.graph()
 
 # print("depth, count", tree_count(bt.root))
+# print(tree_count(a))
 
 # dag = generate_dag(bt.root)
 # dag.graph()

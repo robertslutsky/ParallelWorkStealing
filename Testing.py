@@ -27,9 +27,9 @@ def run_tests(num_iterations, trees, systems):
 
                 # run the dag on the system
                 steps, steal_attempts, successful_steals = system.run(execution_dag_start)
-                data.append((i, system.num_clusters, tree.name, depth, num_nodes, tree_to_string(tree.root), system.num_processors, system.method, system.steal_half, steps, steal_attempts, successful_steals))
+                data.append((i, system.num_clusters, tree.name, depth, num_nodes, execution_dag_start.count, tree_to_string(tree.root), system.num_processors, system.method, system.steal_half, steps, steal_attempts, successful_steals))
 
-    df = pd.DataFrame(data, columns=["iteration", "clusters", "tree_type", "t_height", "t_nodes", "tree", "processors", "method", "steal_half", "steps", "steal_attempts", "successful_steals"])
+    df = pd.DataFrame(data, columns=["iteration", "clusters", "tree_type", "t_height", "t_nodes", "dag_nodes", "tree", "processors", "method", "steal_half", "steps", "steal_attempts", "successful_steals"])
     enablePrint()
     return df
 
@@ -56,33 +56,53 @@ def save_results(df: pd.DataFrame, name):
 
 # max_index = None
 # max_count = 0
-# for i in range(1000, 10000):
-#     # print("i", i)
+# btGen = BinomialTreeGenerator(2, 0.49999)
+# gtGen = GeometricTreeGenerator(5, 6)
+# for i in range(0, 50):
+#     print("i", i)
+#     np.random.seed(i)
 #     random.seed(i)
-#     btGen = BinomialTreeGenerator(2, 0.49999)
 #     # bt2 = btGen.generate_tree()
 #     try:
-#         bt1 = btGen.generate_tree()
-#         depth, count = tree_count(bt1.root)
+#         t = gtGen.generate_tree()
+#         depth, count = tree_count(t.root)
+#         if count > max_count:
+#             max_index = i
+#             max_count = count
 #     except:
 #         pass
-#     if count > max_count:
-#         max_index = i
-#         max_count = count
 #     # print("bt2 stats", tree_count(bt2.root))
 # print(max_index, max_count)
 
-random.seed(7)
-btGen = BinomialTreeGenerator(2, 0.499)
-bt1 = btGen.generate_tree("BT1")
-print("bt1 stats", tree_count(bt1.root))
+np.random.seed(8)
+gtGen = GeometricTreeGenerator(1.02, 300)
+gt1 = gtGen.generate_tree("GT1")
+a = generate_dag(gt1.root)
+print("gt1 stats", tree_count(gt1.root))
+print(a.count)
 
-random.seed(3077)
-btGen = BinomialTreeGenerator(2, 0.49999)
-bt2 = btGen.generate_tree("BT2")
-print("bt2 stats", tree_count(bt2.root))
+np.random.seed(45)
+gtGen = GeometricTreeGenerator(1.016, 400)
+gt2 = gtGen.generate_tree("GT2")
+b = generate_dag(gt2.root)
+print("gt2 stats", tree_count(gt2.root))
+print(b.count)
 
-trees = [bt1, bt2]
+# random.seed(7)
+# btGen = BinomialTreeGenerator(2, 0.499)
+# bt1 = btGen.generate_tree("BT1")
+# # bt1_dag = generate_dag(bt1.root)
+# print("bt1 stats", tree_count(bt1.root))
+# # print("bt1_dag stats", tree_count(bt1_dag))
+
+# random.seed(3077)
+# btGen = BinomialTreeGenerator(2, 0.49999)
+# bt2 = btGen.generate_tree("BT2")
+# # bt2_dag = generate_dag(bt2.root)
+# print("bt2 stats", tree_count(bt2.root))
+# # print("bt2_dag stats", tree_count(bt2_dag))
+
+trees = [gt1, gt2]
 
 systems = []
 for np in [4, 8, 16, 32, 64]:
@@ -96,4 +116,4 @@ for np in [4, 8, 16, 32, 64]:
             systems.append(System(num_processors=np, method=policy, num_clusters=2, steal_half=steal_half))
 
 df = run_tests(1, trees, systems)
-save_results(df, "all")
+save_results(df, "geotrees")
