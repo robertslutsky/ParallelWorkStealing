@@ -38,13 +38,13 @@ class Node:
         childrenString = 'children: '
         for c in self.children:
             childrenString += str(c.id) + ' '
-        # return str(self.id) + ' ' + parentString + childrenString
         return str(self.id)
 
+    # makes the child of this node a spawn
     def spawn(self):
         return self.continuation().be_a_spawn()
 
-    #node both spawn/sync would cause problems
+    # makes a node a spawn node
     def be_a_spawn(self):
         c1 = Node([self])
         c2 = Node([self])
@@ -55,6 +55,7 @@ class Node:
         c2.children = [sync]
         return c1, c2
 
+    # makes a continuation node
     def continuation(self):
         c = Node([self], self.children)
         self.children[0].parents.remove(self)

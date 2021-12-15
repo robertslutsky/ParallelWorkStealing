@@ -56,18 +56,3 @@ class System:
 
     def __str__(self):
         return(f"#p={self.num_processors}, method={self.method}")
-
-# moved this stuff to main
-# start = Node()
-# end = Node([start])
-# start.children = [end]
-# # x,y=start.spawn()
-# # start.be_a_spawn()
-# x, y = start.be_a_spawn()
-# # x, y = x.be_a_spawn()
-# x, y = x.be_a_spawn()
-# # end.graph_p()
-# s = System(2, method='random_within_cluster_small_crossover',num_clusters=2)
-# random.seed(6)
-# s.run(start)
-# start.graph()

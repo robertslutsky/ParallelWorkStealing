@@ -21,15 +21,6 @@ class Processor:
         if method == "push_stack":
             Processor.push_stack = []
 
-    # def activate(self):
-    #     if self.deque:
-    #         self.current = self.deque.pop()
-    #         self.active = True
-    #         return True
-    #     else:
-    #         self.active = False
-    #     return self.active
-
     def is_active(self):
         return self.active
 
@@ -113,15 +104,6 @@ class Processor:
                     self.victim = self.last_stole_from
                     self.victim.last_stole_from = self # tell processor you are stealing from to steal from you
 
-            elif self.method == 'last_pusher':
-                # so many will push at the same time in ours idk about this one
-                # steal from the processor that pushed to its deque latest
-                raise NotImplemented("oof")
-
-            elif self.method == 'last_mover':
-                #i confused
-                # steal from the processor that pushed to its deque or stole from another deque latest (idk how this could be better, but whatever)
-                raise NotImplemented("oof")
             elif self.method == "push_stack":
                 if len(Processor.push_stack) == 0:
                     self.victim = random.choice(processors)
