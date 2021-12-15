@@ -14,18 +14,12 @@ def blockPrint():
 def enablePrint():
     sys.stdout = sys.__stdout__
 
-def run_tests(num_iterations, tree_generator_objs, systems, min_tree_depth, min_tree_nodes):
+def run_tests(num_iterations, trees, systems):
     blockPrint()
     data = []
     for i in range(num_iterations):
-        for tree_generator_obj in tree_generator_objs:
-            tree = tree_generator_obj.generate_tree()
+        for tree in trees:
             depth, num_nodes = tree_count(tree.root)
-
-            # generate tree until up to standards
-            while depth < min_tree_depth or num_nodes < min_tree_nodes:
-                tree = tree_generator_obj.generate_tree()
-                depth, num_nodes = tree_count(tree.root)
 
             for system in systems:
                 # get the exec dag
@@ -33,9 +27,9 @@ def run_tests(num_iterations, tree_generator_objs, systems, min_tree_depth, min_
 
                 # run the dag on the system
                 steps, steal_attempts, successful_steals = system.run(execution_dag_start)
-                data.append((i, str(tree_generator_obj), depth, num_nodes, tree_to_string(tree.root), str(system), steps, steal_attempts, successful_steals))
+                data.append((i, system.num_clusters, tree.name, depth, num_nodes, tree_to_string(tree.root), system.num_processors, system.method, system.steal_half, steps, steal_attempts, successful_steals))
 
-    df = pd.DataFrame(data, columns=["iteration", "tree_type", "t_height", "t_nodes", "tree", "system_type", "steps", "steal_attempts", "successful_steals"])
+    df = pd.DataFrame(data, columns=["iteration", "clusters", "tree_type", "t_height", "t_nodes", "tree", "processors", "method", "steal_half", "steps", "steal_attempts", "successful_steals"])
     enablePrint()
     return df
 
@@ -54,8 +48,52 @@ def save_results(df: pd.DataFrame, name):
     df.to_csv(data_file, index=False)
     print("saved results to", data_file)
 
-tree_gen_objs = [BinomialTreeGenerator(3, 0.2), GeometricTreeGenerator(2, 3)]
-systems = [System(num_processors=100, method='random'), System(num_processors=4, method='right')]
+# tree_gen_objs = [BinomialTreeGenerator(3, 0.2), GeometricTreeGenerator(2, 3)]
+# systems = [System(num_processors=100, method='random'), System(num_processors=4, method='right')]
 
-df = run_tests(100, tree_gen_objs, systems, 3, 0)
-save_results(df, "test")
+# df = run_tests(100, tree_gen_objs, systems, 3, 0)
+# save_results(df, "test")
+
+# max_index = None
+# max_count = 0
+# for i in range(1000, 10000):
+#     # print("i", i)
+#     random.seed(i)
+#     btGen = BinomialTreeGenerator(2, 0.49999)
+#     # bt2 = btGen.generate_tree()
+#     try:
+#         bt1 = btGen.generate_tree()
+#         depth, count = tree_count(bt1.root)
+#     except:
+#         pass
+#     if count > max_count:
+#         max_index = i
+#         max_count = count
+#     # print("bt2 stats", tree_count(bt2.root))
+# print(max_index, max_count)
+
+random.seed(7)
+btGen = BinomialTreeGenerator(2, 0.499)
+bt1 = btGen.generate_tree("BT1")
+print("bt1 stats", tree_count(bt1.root))
+
+random.seed(3077)
+btGen = BinomialTreeGenerator(2, 0.49999)
+bt2 = btGen.generate_tree("BT2")
+print("bt2 stats", tree_count(bt2.root))
+
+trees = [bt1, bt2]
+
+systems = []
+for np in [4, 8, 16, 32, 64]:
+    for steal_half in [True, False]:
+        # 1 cluster tests
+        for policy in ["random", "revenge", "right", "push_stack"]:
+            systems.append(System(num_processors=np, method=policy, num_clusters=1, steal_half=steal_half))
+
+        # 2 cluster tests
+        for policy in ["random", "revenge", "random_within_cluster_small_crossover", "push_stack"]:
+            systems.append(System(num_processors=np, method=policy, num_clusters=2, steal_half=steal_half))
+
+df = run_tests(1, trees, systems)
+save_results(df, "all")

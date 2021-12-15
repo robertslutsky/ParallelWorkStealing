@@ -3,20 +3,23 @@ import random
 
 
 class Processor:
-    def __init__(self, id, method='random', current=None, cluster = 0):
+
+    def __init__(self, id, method='random', current=None, cluster=0, steal_half=False):
         self.deque = deque()
         self.current = None
         self.method = method
+        self.steal_half = steal_half
         self.id = id
         self.active = False
         self.cluster = cluster
         self.delay = 0
         self.victim = None
-        if method == "revenge":
-            self.last_stole_from_id = id-1 # initialize to processor to the left. Can be -1, will be taken care of when choosing the processor
 
         if method == "revenge":
-            self.last_stole_from_id = id-1 # initialize to processor to the left. Can be -1, will be taken care of when choosing the processor
+            self.last_stole_from = None
+
+        if method == "push_stack":
+            Processor.push_stack = []
 
     # def activate(self):
     #     if self.deque:
@@ -45,6 +48,10 @@ class Processor:
             self.current = ready_children[0]
             if len(ready_children) == 2:
                 self.deque.appendleft(ready_children[1])
+                if self.method == "push_stack":
+                    print("before", len(Processor.push_stack))
+                    Processor.push_stack.append(self)
+                    print("after", len(Processor.push_stack))
 
             if len(ready_children)==1:
                 print("enabled1: ", self.current.id)
@@ -67,10 +74,24 @@ class Processor:
         # choosing processor to steal from
         # needs to be implemented for each option
         if self.delay == 0:
+            #this is ovarall random
             if self.method == 'random':
-                #need to mod so won't choose itself?
                 self.victim = random.choice(processors)
-
+                while self.victim == self and len(processors) != 1:
+                    self.victim = random.choice(processors)
+            # random within cluster w prob .95, prob .05 attempt to steal from other cluster
+            elif self.method == 'random_within_cluster_small_crossover':
+                r = random.random()
+                if r < .05:
+                    pos = random.randint(0,len(processors)/2-1)
+                    self.victim = processors[2*pos + 1-self.cluster]
+                else:
+                    pos = random.randint(0, len(processors) / 2-1)
+                    act_pos = 2*pos + self.cluster
+                    while processors[act_pos] == self and len(processors)!=2:
+                        pos = random.randint(0, len(processors) / 2-1)
+                        act_pos = 2 * pos + self.cluster
+                    self.victim = processors[act_pos]
             elif self.method == 'right':
                 num_processors = len(processors)
                 steal_index = (self.id + 1) % num_processors
@@ -78,18 +99,41 @@ class Processor:
 
             elif self.method == 'revenge':
                 # steal from processor that stole from you last (can try different ways of initializing who to take from first if never been stolen from)
-                num_processors = len(processors)
-                steal_index = (self.last_stole_from_id) % num_processors # handles if id is -1
-                self.victim = processors[steal_index]
-                self.victim.last_stole_from_id = self.id # tell processor you are stealing from to steal from you
+                if self.last_stole_from is None:
+                    # never stolen from, use random
+                    self.victim = random.choice(processors)
+                    while self.victim == self and len(processors) != 1:
+                        self.victim = random.choice(processors)
+
+                    if len(self.victim.deque) != 0:
+                        # steal succeeds
+                        self.victim.last_stole_from = self
+
+                else:
+                    self.victim = self.last_stole_from
+                    self.victim.last_stole_from = self # tell processor you are stealing from to steal from you
 
             elif self.method == 'last_pusher':
+                # so many will push at the same time in ours idk about this one
                 # steal from the processor that pushed to its deque latest
-                assert NotImplemented("oof")
+                raise NotImplemented("oof")
 
             elif self.method == 'last_mover':
+                #i confused
                 # steal from the processor that pushed to its deque or stole from another deque latest (idk how this could be better, but whatever)
-                assert NotImplemented("oof")
+                raise NotImplemented("oof")
+            elif self.method == "push_stack":
+                if len(Processor.push_stack) == 0:
+                    self.victim = random.choice(processors)
+                    while self.victim == self and len(processors) != 1:
+                        self.victim = random.choice(processors)
+                else:
+                    self.victim = Processor.push_stack[-1]
+                    print("before", len(Processor.push_stack))
+                    Processor.push_stack = Processor.push_stack[:-1]
+                    print("after", len(Processor.push_stack))
+            else:
+                raise RuntimeError("no steal method")
 
             #delay for which processor stole from
             if self.victim.cluster == self.cluster:
@@ -100,7 +144,15 @@ class Processor:
             print(f"proc {str(self.id)} sent steal attempt to {str(self.victim.id)}, w/ delay {self.delay}", end=", ")
 
         if self.delay == 1 and self.victim.deque:
-            self.current = self.victim.deque.pop()
+            if self.steal_half:
+                victim_deque_length = len(self.victim.deque)
+                for i in range(int((victim_deque_length) / 2)):
+                    self.deque.appendleft(self.victim.deque.pop())
+                if len(self.deque) > 0:
+                    self.current = self.deque.popleft()
+
+            else:
+                self.current = self.victim.deque.pop()
 
         self.delay -= 1
 
@@ -114,6 +166,10 @@ class Processor:
                 print('processor ' + str(self.id) + ' got response and failed steal')
                 return False
         print()
+
+    def __eq__(self,obj):
+        return self.id == obj.id
+
 
     def startup(self, n):
         self.active = True

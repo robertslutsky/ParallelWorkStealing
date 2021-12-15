@@ -33,17 +33,17 @@ class TreeNode:
 
 
 class SearchTree:
-    def __init__(self):
-        pass
+    def __init__(self, name):
+        self.name = name
 
     def graph(self):
         self.root.graph()
 
 class BinomialTree(SearchTree):
-    def __init__(self, m, q):
+    def __init__(self, m, q, name="binomtreeName"):
         self.root = TreeNode()
         self.gen_tree(self.root, m, q)
-        super().__init__()
+        super().__init__(name)
         TreeNode.counter = 0
 
     def gen_tree(self, root, m, q):
@@ -55,11 +55,11 @@ class BinomialTree(SearchTree):
 
 class GeometricTree(SearchTree):
     # b is mean so inverse of normal geometric parameter
-    def __init__(self, b, d=10):
+    def __init__(self, b, d=10, name="geotreeName"):
         self.root = TreeNode()
         self.gen_tree(self.root, b, d)
         TreeNode.counter = 0
-        super().__init__()
+        super().__init__(name)
 
     def gen_tree(self, root, b, d):
         if d == 0:
@@ -75,8 +75,8 @@ class BinomialTreeGenerator:
         self.m = m
         self.q = q
 
-    def generate_tree(self):
-        bt = BinomialTree(self.m, self.q)
+    def generate_tree(self, name="treeName"):
+        bt = BinomialTree(self.m, self.q, name)
         return bt
 
     def __str__(self):
@@ -160,33 +160,33 @@ def tree_count(root):
 #     bt.graph()
 #     i+=1
 
-random.seed(55)
-bt = BinomialTree(3, .18)
-bt.graph()
+# random.seed(55)
+# bt = BinomialTree(3, .18)
+# bt.graph()
 
-print("depth, count", tree_count(bt.root))
+# print("depth, count", tree_count(bt.root))
 
-dag = generate_dag(bt.root)
-dag.graph()
-
-
-num_good_trees = 0
-counts = []
-num_trees = 0
-while num_good_trees < 10:
-    bt = BinomialTree(3,.18)
-    dag = generate_dag(bt.root)
-    dag.graph()
-    depth, count = tree_count(bt.root)
-    if depth>10:
-        counts.append(count)
-        num_good_trees += 1
-        num_trees += 1
-print(counts)
-print(num_trees)
+# dag = generate_dag(bt.root)
+# dag.graph()
 
 
-gt = GeometricTree(2, 3)
-gt.graph()
-dag2 = generate_dag(gt.root)
-dag2.graph()
+# num_good_trees = 0
+# counts = []
+# num_trees = 0
+# while num_good_trees < 10:
+#     bt = BinomialTree(3,.18)
+#     dag = generate_dag(bt.root)
+#     dag.graph()
+#     depth, count = tree_count(bt.root)
+#     if depth>10:
+#         counts.append(count)
+#         num_good_trees += 1
+#         num_trees += 1
+# print(counts)
+# print(num_trees)
+
+
+# gt = GeometricTree(2, 3)
+# gt.graph()
+# dag2 = generate_dag(gt.root)
+# dag2.graph()
