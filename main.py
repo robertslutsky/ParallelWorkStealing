@@ -14,10 +14,10 @@ def print_hi(name):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    # example of generating execution dag + system and running
     start = Node()
     end = Node([start])
     start.children = [end]
-
     # x,y=start.spawn()
     # start.be_a_spawn()
     x, y = start.be_a_spawn()

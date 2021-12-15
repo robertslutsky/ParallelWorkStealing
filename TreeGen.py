@@ -6,12 +6,10 @@ from Node import Node
 
 
 class TreeNode:
-    # maybe reset?
     counter = 0
 
     def __init__(self):
         self.children = []
-        # self.parents =[]
         self.id = TreeNode.counter
         TreeNode.counter += 1
 
@@ -70,6 +68,7 @@ class GeometricTree(SearchTree):
             root.children.append(t)
             self.gen_tree(t, b, d - 1)
 
+
 class BinomialTreeGenerator:
     def __init__(self, m, q):
         self.m = m
@@ -81,6 +80,7 @@ class BinomialTreeGenerator:
 
     def __str__(self):
         return(f"Binomial Tree, m={self.m}, q={self.q}")
+
 
 class GeometricTreeGenerator:
     def __init__(self, b, d):
@@ -153,43 +153,18 @@ def tree_count(root):
         return max(depths)+1, sum(counts)+1
 
 
-# i=20
-# while True:
-#     print(i)
-#     random.seed(i)
-#     bt = BinomialTree(5,.18)
-#     bt.graph()
-#     i+=1
-
+#example of binomial tree and corresponding execution dag
 # random.seed(55)
 # bt = BinomialTree(2, .1)
 # bt.graph()
-# a = generate_dag(bt.root)
-# a.graph()
 
 # print("depth, count", tree_count(bt.root))
-# print(tree_count(a))
 
 # dag = generate_dag(bt.root)
 # dag.graph()
 
 
-# num_good_trees = 0
-# counts = []
-# num_trees = 0
-# while num_good_trees < 10:
-#     bt = BinomialTree(3,.18)
-#     dag = generate_dag(bt.root)
-#     dag.graph()
-#     depth, count = tree_count(bt.root)
-#     if depth>10:
-#         counts.append(count)
-#         num_good_trees += 1
-#         num_trees += 1
-# print(counts)
-# print(num_trees)
-
-
+#example of geometric tree and corresponding execution dag
 # gt = GeometricTree(2, 3)
 # gt.graph()
 # dag2 = generate_dag(gt.root)
